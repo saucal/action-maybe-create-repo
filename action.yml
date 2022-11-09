@@ -1,0 +1,10 @@
+name: 'Maybe Create Repo'
+description: 'Ensure that a repo exists'
+inputs:
+  token:  # id of input
+    description: 'GH Token'
+    required: false
+    default: "${{ github.token }}"
+runs:
+  using: 'node16'
+  main: 'main.js'

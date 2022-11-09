@@ -5,19 +5,29 @@
 	const core = require('@actions/core');
 	const { Octokit } = require("@octokit/core");
 
-	const octokit = new Octokit({ auth: core.getInput('token', { required: false }) });
-	const [ owner, repo ] = core.getInput('repo', { required: false }).split("/");
+	const inputToken = core.getInput('token', { required: false });
+	const inputRepo = core.getInput('repo', { required: false });
+	const inputSuffix = core.getInput('repo-suffix', { required: false });
+
+	const octokit = new Octokit({ auth: inputToken });
+	const [ owner, repo ] = inputRepo.split("/");
+	const targetRepo = repo + '-' + inputSuffix;
 
 	try {
 		await octokit.request("GET /repos/{owner}/{repo}", {
 			owner,
-			repo,
-		})
+			repo: targetRepo,
+		});
 	} catch( e ) {
-		await octokit.request("POST /orgs/{org}/repos", {
+		const { data: sourceRepo } = await octokit.request("GET /repos/{owner}/{repo}", {
+			owner,
+			repo,
+		});
+
+		await octokit.request('POST /orgs/{org}/repos', {
 			org: owner,
-			name: repo,
-			private: true,
+			name: targetRepo,
+			'private': sourceRepo.private,
 		})
 	}
 

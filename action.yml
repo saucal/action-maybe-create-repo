@@ -9,6 +9,10 @@ inputs:
     description: 'GH Repo Check'
     required: false
     default: "${{ github.repository }}"
+  repo-suffix:  
+    description: 'Suffix'
+    required: false
+    default: "built"
 runs:
   using: 'node16'
   main: 'main.js'

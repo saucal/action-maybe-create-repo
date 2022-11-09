@@ -5,6 +5,10 @@ inputs:
     description: 'GH Token'
     required: false
     default: "${{ github.token }}"
+  repo:  
+    description: 'GH Repo Check'
+    required: false
+    default: "${{ github.repository }}"
 runs:
   using: 'node16'
   main: 'main.js'

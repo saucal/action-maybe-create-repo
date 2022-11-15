@@ -31,4 +31,6 @@
 		})
 	}
 
+	core.setOutput( 'repo', [owner, targetRepo].join('/') );
+
 })()

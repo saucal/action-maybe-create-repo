@@ -1,6 +1,6 @@
 
 
-(async function() {
+(async function () {
 
 	const core = require('@actions/core');
 	const { Octokit } = require("@octokit/core");
@@ -10,7 +10,7 @@
 	const inputSuffix = core.getInput('repo-suffix', { required: false });
 
 	const octokit = new Octokit({ auth: inputToken });
-	const [ owner, repo ] = inputRepo.split("/");
+	const [owner, repo] = inputRepo.split("/");
 	const targetRepo = repo + '-' + inputSuffix;
 
 	try {
@@ -18,7 +18,7 @@
 			owner,
 			repo: targetRepo,
 		});
-	} catch( e ) {
+	} catch (e) {
 		const { data: sourceRepo } = await octokit.request("GET /repos/{owner}/{repo}", {
 			owner,
 			repo,
@@ -31,6 +31,6 @@
 		})
 	}
 
-	core.setOutput( 'repo', [owner, targetRepo].join('/') );
+	core.setOutput('repo', [owner, targetRepo].join('/'));
 
 })()

@@ -55,7 +55,8 @@
 
 		let { data: collaborators } = await octokit.request('GET /repos/{owner}/{repo}/collaborators{?affiliation,permission,per_page,page}', {
 			owner: owner,
-			repo: repo
+			repo: repo,
+			affiliation: 'direct'
 		});
 
 		collaborators = diffBy('login', collaborators, orgAdmins);

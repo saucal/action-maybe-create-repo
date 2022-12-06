@@ -47,7 +47,7 @@
 		return ret;
 	}
 
-	async function getCollaborators(owner, repo) {
+	async function getCollaborators(owner, repo, skip_outside = true) {
 		let { data: orgAdmins } = await octokit.request('GET /orgs/{org}/members{?filter,role,per_page,page}', {
 			org: owner,
 			role: 'admin'
@@ -55,9 +55,18 @@
 
 		let { data: collaborators } = await octokit.request('GET /repos/{owner}/{repo}/collaborators{?affiliation,permission,per_page,page}', {
 			owner: owner,
-			repo: repo,
-			affiliation: 'direct'
+			repo: repo
 		});
+
+		if (skip_outside) {
+			let { data: outsideCollaborators } = await octokit.request('GET /repos/{owner}/{repo}/collaborators{?affiliation,permission,per_page,page}', {
+				owner: owner,
+				repo: repo,
+				affiliation: 'outside'
+			});
+
+			collaborators = diffBy('login', collaborators, outsideCollaborators);
+		}
 
 		collaborators = diffBy('login', collaborators, orgAdmins);
 
@@ -88,7 +97,7 @@
 	}
 
 	let { teams: currentTeams, collaborators: currentCollaborators } = await getCollaborators(owner, repo);
-	let { teams: targetTeams, collaborators: targetCollaborators } = await getCollaborators(owner, targetRepo);
+	let { teams: targetTeams, collaborators: targetCollaborators } = await getCollaborators(owner, targetRepo, false);
 
 	let removeTeams = diffBy('id', targetTeams, currentTeams);
 	let removeCollaborators = diffBy('login', targetCollaborators, currentCollaborators);
@@ -129,6 +138,30 @@
 			owner: owner,
 			repo: targetRepo,
 			username: removeCollaborators[i].login
+		})
+	}
+
+	let { data: targetInvitees } = await octokit.request('GET /repos/{owner}/{repo}/invitations{?per_page,page}', {
+		owner: owner,
+		repo: targetRepo
+	});
+
+	targetInvitees = targetInvitees.filter(function (invitation) {
+		for (var i in currentCollaborators) {
+			if (currentCollaborators[i].login === invitation.invitee.login) {
+				return false;
+			}
+		}
+
+		return true;
+	});
+
+	for (var i in targetInvitees) {
+		console.log("Ensuring user " + targetInvitees[i].invitee.login + " doesn't have access anymore.");
+		await octokit.request('DELETE /repos/{owner}/{repo}/invitations/{invitation_id}', {
+			owner: owner,
+			repo: targetRepo,
+			invitation_id: targetInvitees[i].id
 		})
 	}
 

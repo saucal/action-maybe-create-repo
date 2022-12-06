@@ -100,7 +100,7 @@
 			team_slug: currentTeams[i].slug,
 			owner: owner,
 			repo: targetRepo,
-			permission: 'pull'
+			permission: currentTeams[i].permission === 'admin' ? 'admin' : 'pull'
 		});
 	}
 	for (var i in currentCollaborators) {
@@ -109,7 +109,7 @@
 			owner: owner,
 			repo: targetRepo,
 			username: currentCollaborators[i].login,
-			permission: 'pull'
+			permission: currentCollaborators[i].permission === 'admin' ? 'admin' : 'pull'
 		})
 	}
 

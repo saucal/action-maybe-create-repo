@@ -8,6 +8,7 @@
 	const inputToken = core.getInput('token', { required: false });
 	const inputRepo = core.getInput('repo', { required: false });
 	const inputSuffix = core.getInput('repo-suffix', { required: false });
+	const excludeOutsideCollaborators = core.getInput('exclude-outside-collaborators', { required: false }) === 'true' ? true : false;
 
 	const octokit = new Octokit({ auth: inputToken });
 	const [owner, repo] = inputRepo.split("/");
@@ -96,7 +97,7 @@
 		return { teams: repoTeams, collaborators };
 	}
 
-	let { teams: currentTeams, collaborators: currentCollaborators } = await getCollaborators(owner, repo);
+	let { teams: currentTeams, collaborators: currentCollaborators } = await getCollaborators(owner, repo, excludeOutsideCollaborators );
 	let { teams: targetTeams, collaborators: targetCollaborators } = await getCollaborators(owner, targetRepo, false);
 
 	let removeTeams = diffBy('id', targetTeams, currentTeams);

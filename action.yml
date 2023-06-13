@@ -13,6 +13,10 @@ inputs:
     description: 'Suffix'
     required: false
     default: "built"
+  exclude-outside-collaborators:
+    description: 'Exclude Outside Collaborators'
+    required: false
+    default: "true"
 runs:
   using: 'node16'
   main: 'main.js'

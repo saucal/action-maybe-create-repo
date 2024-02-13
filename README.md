@@ -33,6 +33,9 @@ The following example will create a repo within the same organization with the b
 
     # Suffix to use on newly generated repo (appended to the current repo name)
     repo-suffix: "built"
+
+    # Whether to exclude or not outside collaborators.
+    exclude-outside-collaborators: true
 ```
 
 ## Outputs

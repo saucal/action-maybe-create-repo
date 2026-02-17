@@ -17,6 +17,10 @@ inputs:
     description: 'Exclude Outside Collaborators'
     required: false
     default: "true"
+  skip-permissions-sync:
+    description: 'Skip permissions sync'
+    required: false
+    default: "false"
 runs:
   using: 'node16'
   main: 'main.js'

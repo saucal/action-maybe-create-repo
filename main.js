@@ -9,6 +9,7 @@
 	const inputRepo = core.getInput('repo', { required: false });
 	const inputSuffix = core.getInput('repo-suffix', { required: false });
 	const excludeOutsideCollaborators = core.getInput('exclude-outside-collaborators', { required: false }) === 'true' ? true : false;
+	const skipPermissionsSync = core.getInput('skip-permissions-sync', { required: false }) === 'true' ? true : false;
 
 	const octokit = new Octokit({ auth: inputToken });
 	const [owner, repo] = inputRepo.split("/");
@@ -30,6 +31,11 @@
 			name: targetRepo,
 			'private': sourceRepo.private,
 		})
+	}
+
+	if (skipPermissionsSync) {
+		console.log("Skipping permissions sync as per input.");
+		return;
 	}
 
 	function diffBy(prop, base, ...diffs) {
